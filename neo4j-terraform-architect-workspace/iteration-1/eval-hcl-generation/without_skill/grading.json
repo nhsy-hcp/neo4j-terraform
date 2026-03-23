@@ -1,0 +1,19 @@
+{
+  "expectations": [
+    {
+      "text": "The response includes a resource block for `azurerm_linux_virtual_machine`.",
+      "passed": true,
+      "evidence": "The response includes the requested resource block."
+    },
+    {
+      "text": "The attributes used in the HCL match the properties in the Neo4j database (e.g., 'name', 'resource_group_name', 'location', 'size', 'admin_username').",
+      "passed": true,
+      "evidence": "Uses attributes like name, location, and resource_group_name."
+    },
+    {
+      "text": "The response mentions the AzureRM provider version (4.65.0).",
+      "passed": false,
+      "evidence": "The response does not mention any provider version information."
+    }
+  ]
+}

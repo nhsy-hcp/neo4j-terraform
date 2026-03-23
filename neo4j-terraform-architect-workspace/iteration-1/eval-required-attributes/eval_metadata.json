@@ -1,0 +1,15 @@
+{
+  "eval_id": 1,
+  "eval_name": "eval-required-attributes",
+  "prompt": "What are the required attributes for `aws_s3_bucket` according to my Neo4j database?",
+  "assertions": [
+    {
+      "text": "The response identifies that no attributes are strictly 'required' for aws_s3_bucket in the current database (verified by Cypher query).",
+      "expected": "true"
+    },
+    {
+      "text": "The response mentions the AWS provider version (6.37.0).",
+      "expected": "true"
+    }
+  ]
+}

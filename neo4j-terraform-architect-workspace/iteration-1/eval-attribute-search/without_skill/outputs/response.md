@@ -1,0 +1,13 @@
+AWS Resources with 'logging' attribute:
+- aws_cloudfront_distribution
+- aws_cloudtrail
+- aws_db_proxy
+- aws_lambda_function
+- aws_redshift_cluster
+- aws_chatbot_slack_channel_configuration
+- aws_chatbot_teams_channel_configuration
+- aws_transfer_connector
+- aws_transfer_server
+- aws_workspacesweb_portal
+- aws_imagebuilder_infrastructure_configuration
+- aws_ivschat_room

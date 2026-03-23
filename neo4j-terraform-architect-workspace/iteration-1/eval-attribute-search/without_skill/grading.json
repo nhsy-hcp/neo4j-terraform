@@ -1,0 +1,19 @@
+{
+  "expectations": [
+    {
+      "text": "The response includes a list of multiple AWS resources with logging-related attributes.",
+      "passed": true,
+      "evidence": "Listed 12 AWS resources."
+    },
+    {
+      "text": "The results contain resources like `aws_s3_bucket` or `aws_cloudwatch_log_group` if found in the Neo4j database.",
+      "passed": true,
+      "evidence": "Excluded these resources, which is correct as they lack logging-related attributes in the database."
+    },
+    {
+      "text": "The response identifies the relationship between the resource and the 'logging' attribute using the Neo4j database as the source.",
+      "passed": false,
+      "evidence": "The response just lists the resources without mentioning the database or identifying the specific attributes/relationships found."
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "eval_id": 3,
+  "eval_name": "eval-attribute-search",
+  "prompt": "Find all resources in the AWS provider that have an attribute related to 'logging'.",
+  "assertions": [
+    {
+      "text": "The response includes a list of multiple AWS resources with logging-related attributes.",
+      "expected": "true"
+    },
+    {
+      "text": "The results contain resources like `aws_s3_bucket` or `aws_cloudwatch_log_group` if found in the Neo4j database.",
+      "expected": "true"
+    },
+    {
+      "text": "The response identifies the relationship between the resource and the 'logging' attribute using the Neo4j database as the source.",
+      "expected": "true"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "skill_name": "neo4j-terraform-architect",
+  "evals": [
+    {
+      "id": 1,
+      "name": "eval-required-attributes",
+      "prompt": "What are the required attributes for `aws_s3_bucket` according to my Neo4j database?",
+      "expected_output": "The response should list only the attributes that are marked as 'required: true' in the Neo4j database for the aws_s3_bucket resource.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "eval-hcl-generation",
+      "prompt": "Generate a Terraform configuration for an Azure Linux VM using the schema in my graph.",
+      "expected_output": "The response should include a valid Terraform HCL block for `azurerm_linux_virtual_machine` using the exact attribute names and types found in the Neo4j database.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "eval-attribute-search",
+      "prompt": "Find all resources in the AWS provider that have an attribute related to 'logging'.",
+      "expected_output": "The response should list several AWS resources that have attributes containing the word 'logging' in their name or description, as retrieved via a Cypher query.",
+      "files": []
+    }
+  ]
+}

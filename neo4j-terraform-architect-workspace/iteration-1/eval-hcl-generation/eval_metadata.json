@@ -1,0 +1,19 @@
+{
+  "eval_id": 2,
+  "eval_name": "eval-hcl-generation",
+  "prompt": "Generate a Terraform configuration for an Azure Linux VM using the schema in my graph.",
+  "assertions": [
+    {
+      "text": "The response includes a resource block for `azurerm_linux_virtual_machine`.",
+      "expected": "true"
+    },
+    {
+      "text": "The attributes used in the HCL match the properties in the Neo4j database (e.g., 'name', 'resource_group_name', 'location', 'size', 'admin_username').",
+      "expected": "true"
+    },
+    {
+      "text": "The response mentions the AzureRM provider version (4.65.0).",
+      "expected": "true"
+    }
+  ]
+}
