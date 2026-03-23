@@ -35,6 +35,47 @@ This project builds a Neo4j graph database populated with the latest Terraform p
    task examples
    ```
 
+## Neo4j MCP Server
+
+This project is compatible with the [Neo4j MCP (Model Context Protocol) server](https://github.com/neo4j/mcp), which allows LLMs and other tools to interact with the Terraform schema graph.
+
+### Prerequisites
+
+- Running Neo4j instance (the provided `docker-compose.yml` already includes the required APOC plugin).
+- **Optional:** Node.js and npm (to run via `npx`).
+
+### Installation & Usage
+
+You can run the MCP server via `npx` (no install required). It is recommended to run in **read-only mode** to prevent accidental modifications to the graph.
+
+#### Run via npx
+```bash
+npx @neo4j/mcp --uri bolt://localhost:7687 --username neo4j --password password --neo4j-read-only true
+```
+
+### MCP Client Configuration (e.g., Claude Desktop)
+Add the following to your configuration file:
+
+```json
+{
+  "mcpServers": {
+    "neo4j": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@neo4j/mcp",
+        "--uri", "bolt://localhost:7687",
+        "--username", "neo4j",
+        "--password", "password",
+        "--neo4j-read-only", "true"
+      ]
+    }
+  }
+}
+```
+
+> **Note:** This project uses a `TF_` prefix for all Neo4j labels and relationship types by default (e.g., `TF_Provider`). The MCP server will automatically discover these, but ensure your queries reflect this namespacing.
+
 ### Manual Steps
 
 If you prefer running steps manually:
