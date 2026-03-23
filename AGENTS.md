@@ -41,5 +41,5 @@ To fetch schemas and populate the graph in one step:
 
 ## Maintenance
 
-- **Tests:** All core parsing and population logic must be tested with `pytest`.
+- **Tests:** All core parsing and population logic must be tested with `pytest`. Maintain a minimum of **80% code coverage** for all scripts.
 - **Linting:** Maintain high code quality with `ruff`. Use `task lint` and `task format` before committing.

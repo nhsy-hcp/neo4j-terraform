@@ -9,7 +9,6 @@ This project builds a Neo4j graph database populated with the latest Terraform p
   - `populate_graph.py`: Parses `schema.json` and loads it into Neo4j.
   - `run_query.py`: Helper to execute Cypher queries from the CLI.
 - `examples/`: Sample Cypher queries for common analysis tasks.
-- `conductor/`: Project management and refactor plans.
 - `Taskfile.yml`: Automation for common tasks.
 
 ## Prerequisites

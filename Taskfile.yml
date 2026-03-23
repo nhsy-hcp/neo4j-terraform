@@ -51,6 +51,11 @@ tasks:
     cmds:
       - PYTHONPATH=. uv run pytest
 
+  test:cov:
+    desc: Run pytest with coverage reporting
+    cmds:
+      - PYTHONPATH=. uv run pytest --cov=scripts --cov-report=term-missing
+
   lint:
     desc: Run ruff linting
     cmds:

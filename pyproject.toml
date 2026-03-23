@@ -10,3 +10,8 @@ dependencies = [
     "ruff",
     "pre-commit",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest-cov>=7.1.0",
+]
