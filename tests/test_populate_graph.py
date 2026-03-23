@@ -52,8 +52,10 @@ def test_populate_process_entity(mock_neo4j):
     assert attr_call[1]["required"] is True
 
 def test_populate_full_flow(mock_neo4j, tmp_path):
-    schema_file = tmp_path / "schema.json"
-    versions_file = tmp_path / "versions.json"
+    cache_dir = tmp_path / ".cache"
+    cache_dir.mkdir()
+    schema_file = cache_dir / "schema.json"
+    versions_file = cache_dir / "versions.json"
     
     schema_data = {
         "provider_schemas": {

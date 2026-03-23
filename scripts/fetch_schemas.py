@@ -74,13 +74,12 @@ def fetch_schemas():
         check=True,
     )
 
-    Path("schema.json").write_text(result.stdout)
-    print("Schema saved to schema.json")
+    Path(".cache/schema.json").write_text(result.stdout)
+    print("Schema saved to .cache/schema.json")
 
     print("Fetching provider versions...")
     version_result = subprocess.run(
         ["terraform", "version", "-json"],
-        cwd=work_dir,
         capture_output=True,
         text=True,
         check=True,
@@ -88,8 +87,8 @@ def fetch_schemas():
     version_data = json.loads(version_result.stdout)
     provider_versions = version_data.get("provider_selections", {})
 
-    Path("versions.json").write_text(json.dumps(provider_versions, indent=2))
-    print("Versions saved to versions.json")
+    Path(".cache/versions.json").write_text(json.dumps(provider_versions, indent=2))
+    print("Versions saved to .cache/versions.json")
 
 
 if __name__ == "__main__":

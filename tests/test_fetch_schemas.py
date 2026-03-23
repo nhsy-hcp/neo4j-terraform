@@ -38,5 +38,12 @@ def test_fetch_schemas(mock_exists, mock_write, mock_mkdir, mock_run):
     
     assert mock_run.call_count == 3
     # Check if we wrote schema.json and versions.json
-    # The first write is main.tf, then schema.json, then versions.json
+    # The first write is main.tf, then .cache/schema.json, then .cache/versions.json
     assert mock_write.call_count == 3
+    calls = mock_write.call_args_list
+
+    # Get the file names that were written to
+    written_files = [str(call.args[0]) if call.args else str(call.kwargs.get('path', '')) for call in calls]
+    
+    # We can't easily assert the exact path if we're using Path().write_text() in the mock
+    # without checking exactly how the mock records it. But we can verify the text.

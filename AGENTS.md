@@ -28,7 +28,7 @@ To fetch schemas and populate the graph in one step:
 2. Run `task fetch`.
 
 ### Populating the Database
-1. Ensure `schema.json` and `versions.json` are present.
+1. Ensure `.cache/schema.json` and `.cache/versions.json` are present.
 2. Run `task populate`.
 
 ### Running Queries
@@ -39,7 +39,7 @@ To fetch schemas and populate the graph in one step:
 To manage the context window efficiently, avoid large, redundant outputs:
 1. **Piping Outputs:** Pipe large Neo4j tool or script outputs to the `.tmp/` folder (e.g., `uv run scripts/run_query.py <query> > .tmp/query_results.json`).
 2. **Selective Reading:** Once piped, use `read_file` with `start_line` and `end_line` to inspect only the required parts of the results.
-3. **Searching Large JSON:** When inspecting `schema.json` (which can be very large), use `jq` to extract specific paths or keys instead of reading or `grep`ing the whole file. (e.g., `jq '.provider_schemas["registry.terraform.io/hashicorp/aws"].resource_schemas.aws_s3_bucket' schema.json`).
+3. **Searching Large JSON:** When inspecting `.cache/schema.json` (which can be very large), use `jq` to extract specific paths or keys instead of reading or `grep`ing the whole file. (e.g., `jq '.provider_schemas["registry.terraform.io/hashicorp/aws"].resource_schemas.aws_s3_bucket' .cache/schema.json`).
 
 ## Expert Skills
 

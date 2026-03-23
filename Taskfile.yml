@@ -1,6 +1,12 @@
 version: '3'
 
 tasks:
+  all:
+    desc: Start Neo4j and setup the graph
+    cmds:
+      - task: up
+      - task: setup
+
   up:
     desc: Start Neo4j
     cmds:
@@ -16,6 +22,7 @@ tasks:
   setup:
     desc: Fetch schemas and populate the graph
     cmds:
+      - mkdir -p .cache .tmp
       - task: fetch
       - task: populate
 
@@ -39,10 +46,10 @@ tasks:
     cmds:
       - docker-compose down
 
-  clean:data:
+  clean:
     desc: Clean local cache and schema files
     cmds:
-#      - rm -rf .cache schema.json versions.json
+      - rm -rf .cache
       - rm -rf data/neo4j/*
     prompt: This will delete all local data and the Neo4j volume. Continue?
 

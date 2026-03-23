@@ -5,8 +5,8 @@ This project builds a Neo4j graph database populated with the latest Terraform p
 ## Project Structure
 
 - `scripts/`: Python scripts for fetching schemas and populating the database.
-  - `fetch_schemas.py`: Uses `terraform` to download provider schemas into `schema.json`.
-  - `populate_graph.py`: Parses `schema.json` and loads it into Neo4j.
+  - `fetch_schemas.py`: Uses `terraform` to download provider schemas into `.cache/schema.json`.
+  - `populate_graph.py`: Parses `.cache/schema.json` and loads it into Neo4j.
   - `run_query.py`: Helper to execute Cypher queries from the CLI.
 - `examples/`: Sample Cypher queries for common analysis tasks.
 - `Taskfile.yml`: Automation for common tasks.
@@ -98,7 +98,7 @@ If you prefer running steps manually:
 
 4. **Populate the Graph Database**:
    ```bash
-   # Loads schema.json and versions.json into Neo4j
+   # Loads .cache/schema.json and .cache/versions.json into Neo4j
    task populate
    ```
 
@@ -117,12 +117,12 @@ The population script supports several environment variables:
 - `task logs`: Stream logs from docker-compose.
 - `task setup`: Fetch provider schemas and populate the graph.
 - `task fetch`: Fetch provider schemas and versions.
-- `task populate`: Load `schema.json` and `versions.json` into Neo4j.
+- `task populate`: Load `.cache/schema.json` and `.cache/versions.json` into Neo4j.
 - `task examples`: Run example Cypher queries from `examples/queries.cql`.
 - `task test`: Run the test suite.
 - `task lint`: Run linting and formatting checks.
 - `task format`: Format code with Ruff.
-- `task clean:data`: Wipe local Neo4j data (requires confirmation).
+- `task clean`: Wipe local Neo4j data and .cache (requires confirmation).
 - `task down`: Stop Neo4j containers.
 
 ## Example Queries
