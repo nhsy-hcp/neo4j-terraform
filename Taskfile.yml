@@ -2,13 +2,22 @@ version: '3'
 
 tasks:
   up:
-    desc: Start Neo4j and populate the graph
+    desc: Start Neo4j
     cmds:
       - docker-compose up -d
-      - task: fetch
-      - task: populate
     status:
       - docker ps | grep neo4j-terraform-db
+
+  logs:
+    desc: Stream logs from docker-compose
+    cmds:
+      - docker-compose logs -f
+
+  setup:
+    desc: Fetch schemas and populate the graph
+    cmds:
+      - task: fetch
+      - task: populate
 
   fetch:
     desc: Fetch Terraform schemas

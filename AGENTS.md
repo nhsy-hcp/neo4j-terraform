@@ -18,6 +18,11 @@ This project creates a graph representation of the Terraform provider ecosystem 
 
 ## Common Operations
 
+### Complete Setup
+To fetch schemas and populate the graph in one step:
+1. Ensure Neo4j is running (`task up`).
+2. Run `task setup`.
+
 ### Fetching New Schemas
 1. Modify `scripts/fetch_schemas.py` if a new provider is needed.
 2. Run `task fetch`.

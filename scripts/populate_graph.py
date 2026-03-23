@@ -103,10 +103,17 @@ class Neo4jPopulator:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Populate Neo4j with Terraform schema.")
+    parser = argparse.ArgumentParser(
+        description="Populate Neo4j with Terraform schema."
+    )
     parser.add_argument("--schema", default="schema.json", help="Path to schema.json")
-    parser.add_argument("--versions", default="versions.json", help="Path to versions.json")
-    parser.add_argument("--provider", help="Update only a specific provider (e.g., 'registry.terraform.io/hashicorp/aws')")
+    parser.add_argument(
+        "--versions", default="versions.json", help="Path to versions.json"
+    )
+    parser.add_argument(
+        "--provider",
+        help="Update only a specific provider (e.g., 'registry.terraform.io/hashicorp/aws')",
+    )
 
     args = parser.parse_args()
 

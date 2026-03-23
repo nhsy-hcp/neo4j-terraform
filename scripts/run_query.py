@@ -24,21 +24,21 @@ def run_queries(file_path):
             for i, query in enumerate(queries):
                 # Skip comments for the title but print them if they exist
                 lines = query.split("\n")
-                title = f"Query {i+1}"
+                title = f"Query {i + 1}"
                 actual_query = []
                 for line in lines:
                     if line.strip().startswith("//"):
                         title = line.strip("// ").strip()
                     else:
                         actual_query.append(line)
-                
+
                 print(f"\n--- {title} ---")
                 print("\n".join(actual_query).strip())
                 print("-" * (len(title) + 8))
-                
+
                 result = session.run(query)
                 records = list(result)
-                
+
                 if not records:
                     print("(No results)")
                     continue
@@ -47,7 +47,7 @@ def run_queries(file_path):
                 keys = result.keys()
                 print(" | ".join(keys))
                 print("-" * (sum(len(k) for k in keys) + 3 * (len(keys) - 1)))
-                
+
                 # Print rows
                 for record in records:
                     print(" | ".join(str(record[k]) for k in keys))

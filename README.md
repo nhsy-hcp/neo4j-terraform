@@ -20,15 +20,18 @@ This project builds a Neo4j graph database populated with the latest Terraform p
 
 ## Getting Started
 
-The easiest way to get started is to use the `task up` command, which handles environment setup and database population.
-
-1. **Setup and Populate**:
+1. **Start Neo4j**:
    ```bash
    task up
    ```
    Access Neo4j Browser at [http://localhost:7474](http://localhost:7474) (User: `neo4j`, Password: `password`).
 
-2. **Run Examples**:
+2. **Setup and Populate**:
+   ```bash
+   task setup
+   ```
+
+3. **Run Examples**:
    ```bash
    task examples
    ```
@@ -70,7 +73,9 @@ The population script supports several environment variables:
 
 ## Taskfile Automation
 
-- `task up`: Start Neo4j, fetch schemas, and populate the graph.
+- `task up`: Start Neo4j containers.
+- `task logs`: Stream logs from docker-compose.
+- `task setup`: Fetch provider schemas and populate the graph.
 - `task fetch`: Fetch provider schemas and versions.
 - `task populate`: Load `schema.json` and `versions.json` into Neo4j.
 - `task examples`: Run example Cypher queries from `examples/queries.cql`.
