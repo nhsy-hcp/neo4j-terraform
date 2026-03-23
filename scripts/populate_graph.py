@@ -106,7 +106,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Populate Neo4j with Terraform schema."
     )
-    parser.add_argument("--schema", default=".cache/schema.json", help="Path to schema.json")
+    parser.add_argument(
+        "--schema", default=".cache/schema.json", help="Path to schema.json"
+    )
     parser.add_argument(
         "--versions", default=".cache/versions.json", help="Path to versions.json"
     )
