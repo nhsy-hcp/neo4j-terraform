@@ -35,6 +35,11 @@ To fetch schemas and populate the graph in one step:
 - Use `scripts/run_query.py` to execute Cypher queries.
 - Prefer adding new queries to `examples/queries.cql` first.
 
+### Token Optimization
+To manage the context window efficiently, avoid large, redundant outputs:
+1. **Piping Outputs:** Pipe large Neo4j tool or script outputs to the `.tmp/` folder (e.g., `uv run scripts/run_query.py <query> > .tmp/query_results.json`).
+2. **Selective Reading:** Once piped, use `read_file` with `start_line` and `end_line` to inspect only the required parts of the results.
+
 ## Expert Skills
 
 - **neo4j-terraform-architect:** Specialized skill for exploring the schema and generating HCL. Use this whenever the user needs deep schema knowledge.
