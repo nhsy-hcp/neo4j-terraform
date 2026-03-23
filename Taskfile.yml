@@ -1,0 +1,55 @@
+version: '3'
+
+tasks:
+  up:
+    desc: Start Neo4j and populate the graph
+    cmds:
+      - docker-compose up -d
+      - task: fetch
+      - task: populate
+    status:
+      - docker ps | grep neo4j-terraform-db
+
+  fetch:
+    desc: Fetch Terraform schemas
+    cmds:
+      - uv run scripts/fetch_schemas.py
+
+  populate:
+    desc: Populate Neo4j graph
+    cmds:
+      - uv run scripts/populate_graph.py
+
+  examples:
+    desc: Run example Cypher queries
+    cmds:
+      - uv run scripts/run_query.py examples/queries.cql
+
+  down:
+    desc: Stop Neo4j
+    cmds:
+      - docker-compose down
+
+  clean:data:
+    desc: Clean local cache and schema files
+    cmds:
+#      - rm -rf .cache schema.json versions.json
+      - rm -rf data/neo4j/*
+    prompt: This will delete all local data and the Neo4j volume. Continue?
+
+  test:
+    desc: Run pytest
+    cmds:
+      - PYTHONPATH=. uv run pytest
+
+  lint:
+    desc: Run ruff linting
+    cmds:
+      - uv run ruff check scripts tests --fix
+      - uv run ruff format scripts tests --check
+
+  format:
+    desc: Format code with ruff
+    cmds:
+      - uv run ruff format scripts tests
+      - uv run ruff check scripts tests --fix

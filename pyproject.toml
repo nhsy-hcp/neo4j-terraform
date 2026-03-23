@@ -1,0 +1,12 @@
+[project]
+name = "neo4j-terraform"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.14"
+dependencies = [
+    "neo4j",
+    "pydantic",
+    "pytest",
+    "ruff",
+    "pre-commit",
+]

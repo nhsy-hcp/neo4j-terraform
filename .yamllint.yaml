@@ -1,0 +1,17 @@
+extends: default
+
+rules:
+  line-length: disable
+  document-start: disable
+  indentation:
+    spaces: 2
+    indent-sequences: true
+  key-duplicates: enable
+  truthy:
+    allowed-values: ["true", "false", "yes", "no"]
+    check-keys: false
+
+ignore: |
+  .venv/
+  .terraform/
+  .cache/
