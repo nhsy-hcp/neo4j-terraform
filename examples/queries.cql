@@ -16,7 +16,7 @@ MATCH (r:TF_Resource)-[:TF_HAS_ATTRIBUTE]->(a:TF_Attribute {name: 'tags'})
 RETURN r.full_name, r.name LIMIT 20;
 
 // 5. Find all required attributes for a resource
-MATCH (r:TF_Resource {full_name: 'google_compute_instance'})-[:TF_HAS_ATTRIBUTE]->(a:TF_Attribute {required: true})
+MATCH (r:TF_Resource {full_name: 'aws_s3_bucket'})-[:TF_HAS_ATTRIBUTE]->(a:TF_Attribute {required: true})
 RETURN a.name, a.type;
 
 // 6. Find resources that share an attribute name
