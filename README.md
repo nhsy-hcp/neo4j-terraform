@@ -2,22 +2,7 @@
 
 This project builds a Neo4j graph database populated with the latest Terraform provider schemas (AWS, GCP, Azure, etc.). It enables complex querying of provider capabilities, resource relationships, and attribute details across the entire Terraform ecosystem.
 
-## Project Structure
-
-- `scripts/`: Python scripts for fetching schemas and populating the database.
-  - `fetch_schemas.py`: Uses `terraform` to download provider schemas into `.cache/schema.json`.
-  - `populate_graph.py`: Parses `.cache/schema.json` and loads it into Neo4j.
-  - `run_query.py`: Helper to execute Cypher queries from the CLI.
-- `examples/`: Sample Cypher queries for common analysis tasks.
-- `Taskfile.yml`: Automation for common tasks.
-
-## Prerequisites
-
-- [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/)
-- [uv](https://github.com/astral-sh/uv) (for Python package management)
-- [Terraform](https://www.terraform.io/) (installed locally to fetch schemas)
-
-## Getting Started
+## Quick Start
 
 1. **Start Neo4j**:
    ```bash
@@ -34,6 +19,60 @@ This project builds a Neo4j graph database populated with the latest Terraform p
    ```bash
    task examples
    ```
+
+## Project Structure
+
+- `scripts/`: Python scripts for fetching schemas and populating the database.
+  - `fetch_schemas.py`: Uses `terraform` to download provider schemas into `.cache/schema.json`.
+  - `populate_graph.py`: Parses `.cache/schema.json` and loads it into Neo4j.
+  - `run_query.py`: Helper to execute Cypher queries from the CLI.
+  - `providers.json`: Configuration file defining which providers to fetch.
+- `examples/`: Sample Cypher queries for common analysis tasks.
+- `docs/`: Additional documentation.
+  - `USAGE.md`: Connection details and best practices for external agents.
+- `Taskfile.yml`: Automation for common tasks.
+- `AGENTS.md`: AI agent guidelines and operational procedures for this project.
+
+## Prerequisites
+
+- [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/)
+- [uv](https://github.com/astral-sh/uv) (for Python package management)
+- [Terraform](https://www.terraform.io/) (installed locally to fetch schemas)
+
+## Manual Setup Steps
+
+If you prefer running steps manually:
+
+1. **Start Neo4j**:
+   ```bash
+   docker-compose up -d
+   ```
+
+2. **Setup Python Environment**:
+   ```bash
+   uv sync
+   ```
+
+3. **Fetch Provider Schemas**:
+   ```bash
+   # Downloads schemas for providers defined in scripts/providers.json
+   task fetch
+   ```
+
+4. **Populate the Graph Database**:
+   ```bash
+   # Loads .cache/schema.json and .cache/versions.json into Neo4j
+   task populate
+   ```
+
+## Configuration
+
+The population script supports several environment variables:
+
+- `NEO4J_URI`: Default `bolt://localhost:7687`
+- `NEO4J_USER`: Default `neo4j`
+- `NEO4J_PASSWORD`: Default `password`
+- `NEO4J_NAMESPACE`: Default `TF_` (prefix for all labels and relationship types)
 
 ## Neo4j MCP Server
 
@@ -76,40 +115,7 @@ Add the following to your configuration file:
 
 > **Note:** This project uses a `TF_` prefix for all Neo4j labels and relationship types by default (e.g., `TF_Provider`). The MCP server will automatically discover these, but ensure your queries reflect this namespacing.
 
-### Manual Steps
-
-If you prefer running steps manually:
-
-1. **Start Neo4j**:
-   ```bash
-   docker-compose up -d
-   ```
-
-2. **Setup Python Environment**:
-   ```bash
-   uv sync
-   ```
-
-3. **Fetch Provider Schemas**:
-   ```bash
-   # Downloads schemas for a predefined list of providers
-   task fetch
-   ```
-
-4. **Populate the Graph Database**:
-   ```bash
-   # Loads .cache/schema.json and .cache/versions.json into Neo4j
-   task populate
-   ```
-
-## Configuration
-
-The population script supports several environment variables:
-
-- `NEO4J_URI`: Default `bolt://localhost:7687`
-- `NEO4J_USER`: Default `neo4j`
-- `NEO4J_PASSWORD`: Default `password`
-- `NEO4J_NAMESPACE`: Default `TF_` (prefix for all labels and relationship types)
+For detailed connection information and best practices for external agents, see [docs/USAGE.md](docs/USAGE.md).
 
 ## Taskfile Automation
 
@@ -147,3 +153,38 @@ RETURN r.full_name LIMIT 10;
 MATCH (r:TF_Resource {full_name: 'aws_instance'})-[:TF_HAS_ATTRIBUTE]->(a:TF_Attribute {required: true})
 RETURN a.name, a.type, a.description;
 ```
+
+## AI Agent Integration
+
+This project includes specialized tooling for AI agents:
+
+- **Agent Guidelines**: See [AGENTS.md](AGENTS.md) for operational procedures, architectural standards, and common workflows.
+- **Expert Skill**: The `neo4j-terraform-architect` skill provides deep schema exploration and HCL generation capabilities. See `.agents/skills/skill-creator/neo4j-terraform-architect.skill` for details.
+- **Connection Details**: External agents can connect to the knowledge graph using the parameters in [docs/USAGE.md](docs/USAGE.md).
+
+## Development
+
+### Testing
+```bash
+task test
+```
+
+Maintain a minimum of **80% code coverage** for all scripts.
+
+### Linting and Formatting
+```bash
+task lint    # Run all checks
+task format  # Auto-format code
+```
+
+The project uses `ruff` with a line length of 120 characters (configured in `.ruff.toml`).
+
+### Adding New Providers
+
+1. Edit `scripts/providers.json` to add the new provider configuration.
+2. Run `task fetch` to download the new schemas.
+3. Run `task populate` to load them into Neo4j.
+
+## License
+
+See [LICENSE](LICENSE) for details.

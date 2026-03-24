@@ -23,9 +23,9 @@ def test_generate_tf_config():
 
 def test_generate_tf_config_with_versions():
     providers = {
-        "aws": None,           # latest
-        "google": "~> 5.0",    # version constraint
-        "null": "= 1.0.0"      # pinned
+        "aws": None,  # latest
+        "google": "~> 5.0",  # version constraint
+        "null": "= 1.0.0",  # pinned
     }
     config = generate_tf_config(providers)
 
@@ -37,11 +37,7 @@ def test_generate_tf_config_with_versions():
 
 
 def test_generate_tf_config_custom_sources():
-    providers = {
-        "github": None,
-        "okta": "~> 4.0",
-        "aws": None
-    }
+    providers = {"github": None, "okta": "~> 4.0", "aws": None}
     config = generate_tf_config(providers)
 
     assert 'github = { source = "integrations/github" }' in config
@@ -57,6 +53,7 @@ def test_generate_tf_config_empty():
 
 def test_get_source_hashicorp_default():
     from scripts.fetch_schemas import get_source
+
     assert get_source("aws") == "hashicorp/aws"
     assert get_source("google") == "hashicorp/google"
     assert get_source("azurerm") == "hashicorp/azurerm"
@@ -64,21 +61,19 @@ def test_get_source_hashicorp_default():
 
 def test_get_source_custom_providers():
     from scripts.fetch_schemas import get_source
+
     assert get_source("github") == "integrations/github"
     assert get_source("okta") == "okta/okta"
 
 
 def test_load_config_success():
     from scripts.fetch_schemas import load_config
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
-        config_data = {
-            "aws": None,
-            "google": "~> 5.0",
-            "null": "= 1.0.0"
-        }
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+        config_data = {"aws": None, "google": "~> 5.0", "null": "= 1.0.0"}
         json.dump(config_data, f)
         config_path = Path(f.name)
-    
+
     try:
         result = load_config(config_path)
         assert result == config_data
@@ -92,13 +87,13 @@ def test_load_config_success():
 def test_load_config_missing_file():
     from scripts.fetch_schemas import load_config
     from io import StringIO
-    
+
     non_existent = Path("/tmp/does_not_exist_12345.json")
-    
+
     # Capture stderr and expect sys.exit(1)
     old_stderr = sys.stderr
     sys.stderr = StringIO()
-    
+
     try:
         load_config(non_existent)
         assert False, "Should have called sys.exit(1)"
@@ -112,11 +107,11 @@ def test_load_config_missing_file():
 
 def test_load_config_invalid_json():
     from scripts.fetch_schemas import load_config
-    
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
         f.write("{ invalid json }")
         config_path = Path(f.name)
-    
+
     try:
         load_config(config_path)
         assert False, "Should have raised JSONDecodeError"
@@ -128,11 +123,11 @@ def test_load_config_invalid_json():
 
 def test_load_config_empty_object():
     from scripts.fetch_schemas import load_config
-    
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
         json.dump({}, f)
         config_path = Path(f.name)
-    
+
     try:
         load_config(config_path)
         assert False, "Should have called sys.exit(1)"
@@ -144,11 +139,11 @@ def test_load_config_empty_object():
 
 def test_load_config_not_dict():
     from scripts.fetch_schemas import load_config
-    
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
         json.dump(["aws", "google"], f)
         config_path = Path(f.name)
-    
+
     try:
         load_config(config_path)
         assert False, "Should have called sys.exit(1)"
@@ -161,9 +156,9 @@ def test_load_config_not_dict():
 @patch("scripts.fetch_schemas.subprocess.run")
 def test_run_terraform_not_found(mock_run):
     from scripts.fetch_schemas import run_terraform
-    
+
     mock_run.side_effect = FileNotFoundError()
-    
+
     try:
         run_terraform(["version"], cwd=Path("."))
         assert False, "Should have called sys.exit(1)"
@@ -175,13 +170,11 @@ def test_run_terraform_not_found(mock_run):
 def test_run_terraform_command_failure(mock_run):
     from scripts.fetch_schemas import run_terraform
     import subprocess
-    
+
     mock_run.side_effect = subprocess.CalledProcessError(
-        returncode=1,
-        cmd=["terraform", "init"],
-        stderr="Error: something went wrong"
+        returncode=1, cmd=["terraform", "init"], stderr="Error: something went wrong"
     )
-    
+
     try:
         run_terraform(["init"], cwd=Path("."))
         assert False, "Should have called sys.exit(1)"
@@ -210,23 +203,23 @@ def test_fetch_schemas(mock_unlink, mock_rmtree, mock_exists, mock_write, mock_m
 
     # Verify terraform commands were called
     assert mock_run.call_count == 3
-    
+
     # Verify file writes: main.tf, schema.json, versions.json
     assert mock_write.call_count == 3
-    
+
     # Verify main.tf content
     main_tf_call = mock_write.call_args_list[0]
     main_tf_content = main_tf_call[0][0]
     assert "terraform {" in main_tf_content
     assert "required_providers {" in main_tf_content
-    
+
     # Verify schema.json content is valid JSON
     schema_call = mock_write.call_args_list[1]
     schema_content = schema_call[0][0]
     schema_data = json.loads(schema_content)
     assert "provider_schemas" in schema_data
     assert "registry.terraform.io/hashicorp/aws" in schema_data["provider_schemas"]
-    
+
     # Verify versions.json content
     version_call = mock_write.call_args_list[2]
     version_content = version_call[0][0]
