@@ -22,17 +22,9 @@ def test_populate_process_entity(mock_neo4j):
     populator = Neo4jPopulator("bolt://localhost:7687", "user", "pass", "TF_")
     session = MagicMock()
 
-    entity_schema = {
-        "block": {
-            "attributes": {
-                "name": {"type": "string", "description": "The name", "required": True}
-            }
-        }
-    }
+    entity_schema = {"block": {"attributes": {"name": {"type": "string", "description": "The name", "required": True}}}}
 
-    populator._process_entity(
-        session, "hashicorp/aws", "aws_instance", entity_schema, "Resource"
-    )
+    populator._process_entity(session, "hashicorp/aws", "aws_instance", entity_schema, "Resource")
 
     # Check if session.run was called for the entity and the attribute
     assert session.run.call_count == 2
@@ -46,10 +38,7 @@ def test_populate_process_entity(mock_neo4j):
 
     # Verify attribute creation call
     attr_call = call_args_list[1]
-    assert (
-        "MERGE (a:TF_Attribute {name: $attr_name, owner: $entity_name})"
-        in attr_call[0][0]
-    )
+    assert "MERGE (a:TF_Attribute {name: $attr_name, owner: $entity_name})" in attr_call[0][0]
     assert attr_call[1]["attr_name"] == "name"
     assert attr_call[1]["attr_type"] == "string"
     assert attr_call[1]["required"] is True
@@ -83,10 +72,6 @@ def test_populate_full_flow(mock_neo4j, tmp_path):
     # Check if constraints were created
     assert any("CREATE CONSTRAINT" in call[0][0] for call in session.run.call_args_list)
     # Check if provider was merged
-    assert any(
-        "MERGE (p:TF_Provider" in call[0][0] for call in session.run.call_args_list
-    )
+    assert any("MERGE (p:TF_Provider" in call[0][0] for call in session.run.call_args_list)
     # Check if resource was merged
-    assert any(
-        "MERGE (e:TF_Resource" in call[0][0] for call in session.run.call_args_list
-    )
+    assert any("MERGE (e:TF_Resource" in call[0][0] for call in session.run.call_args_list)

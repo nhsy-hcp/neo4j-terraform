@@ -56,20 +56,14 @@ class Neo4jPopulator:
         # Process Resources
         resources = provider_data.get("resource_schemas", {})
         for res_name, res_schema in resources.items():
-            self._process_entity(
-                session, provider_name, res_name, res_schema, "Resource"
-            )
+            self._process_entity(session, provider_name, res_name, res_schema, "Resource")
 
         # Process Data Sources
         data_sources = provider_data.get("data_source_schemas", {})
         for ds_name, ds_schema in data_sources.items():
-            self._process_entity(
-                session, provider_name, ds_name, ds_schema, "DataSource"
-            )
+            self._process_entity(session, provider_name, ds_name, ds_schema, "DataSource")
 
-    def _process_entity(
-        self, session, provider_name, entity_name, entity_schema, label
-    ):
+    def _process_entity(self, session, provider_name, entity_name, entity_schema, label):
         # Create Resource/DataSource node and link to Provider
         session.run(
             f"""
@@ -103,15 +97,9 @@ class Neo4jPopulator:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Populate Neo4j with Terraform schema."
-    )
-    parser.add_argument(
-        "--schema", default=".cache/schema.json", help="Path to schema.json"
-    )
-    parser.add_argument(
-        "--versions", default=".cache/versions.json", help="Path to versions.json"
-    )
+    parser = argparse.ArgumentParser(description="Populate Neo4j with Terraform schema.")
+    parser.add_argument("--schema", default=".cache/schema.json", help="Path to schema.json")
+    parser.add_argument("--versions", default=".cache/versions.json", help="Path to versions.json")
     parser.add_argument(
         "--provider",
         help="Update only a specific provider (e.g., 'registry.terraform.io/hashicorp/aws')",

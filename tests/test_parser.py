@@ -34,9 +34,9 @@ def test_schema_parsing_logic():
 
 
 def test_attr_parsing():
-    res_schema = MOCK_SCHEMA["provider_schemas"]["registry.terraform.io/hashicorp/aws"][
-        "resource_schemas"
-    ]["aws_s3_bucket"]
+    res_schema = MOCK_SCHEMA["provider_schemas"]["registry.terraform.io/hashicorp/aws"]["resource_schemas"][
+        "aws_s3_bucket"
+    ]
     attributes = res_schema["block"]["attributes"]
     assert "bucket" in attributes
     attr = attributes["bucket"]
