@@ -26,8 +26,12 @@ import os
 import argparse
 import time
 import logging
+from pathlib import Path
 from neo4j import GraphDatabase
 from neo4j.exceptions import TransientError, ServiceUnavailable
+
+# Get project root (parent of scripts directory)
+PROJECT_ROOT = Path(__file__).parent.parent
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -532,12 +536,12 @@ def main():
     )
     parser.add_argument(
         "--schema",
-        default=".cache/schema.json",
+        default=str(PROJECT_ROOT / ".cache" / "schema.json"),
         help="Path to schema.json (default: .cache/schema.json)",
     )
     parser.add_argument(
         "--versions",
-        default=".cache/versions.json",
+        default=str(PROJECT_ROOT / ".cache" / "versions.json"),
         help="Path to versions.json (default: .cache/versions.json)",
     )
     parser.add_argument(

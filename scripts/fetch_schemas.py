@@ -5,8 +5,10 @@ import os
 import sys
 from pathlib import Path
 
-DEFAULT_CONFIG_PATH = Path("providers.json")
-WORK_DIR = Path(".cache")
+# Get project root (parent of scripts directory)
+PROJECT_ROOT = Path(__file__).parent.parent
+DEFAULT_CONFIG_PATH = PROJECT_ROOT / "scripts" / "providers.json"
+WORK_DIR = PROJECT_ROOT / ".cache"
 
 # Source registry for non-hashicorp providers
 PROVIDER_SOURCES = {

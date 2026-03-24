@@ -8,6 +8,7 @@ tasks:
       - task: setup
 
   up:
+    aliases: [start]
     desc: Start Neo4j
     cmds:
       - docker-compose up -d
@@ -19,6 +20,11 @@ tasks:
     cmds:
       - docker-compose logs -f
 
+  ui:
+    desc: Open Neo4j browser GUI
+    cmds:
+      - open http://localhost:7474
+
   setup:
     desc: Fetch schemas and populate the graph
     cmds:
@@ -29,12 +35,12 @@ tasks:
   fetch:
     desc: Fetch Terraform schemas
     cmds:
-      - uv run scripts/fetch_schemas.py
+      - uv run python scripts/fetch_schemas.py
 
   populate:
     desc: Populate Neo4j graph
     cmds:
-      - uv run scripts/populate_graph.py
+      - uv run python scripts/populate_graph.py
 
   examples:
     desc: Run example Cypher queries
@@ -42,12 +48,14 @@ tasks:
       - uv run scripts/run_query.py examples/queries.cql
 
   down:
+    aliases: [stop]
     desc: Stop Neo4j
     cmds:
       - docker-compose down
 
   clean:
     desc: Clean local cache and schema files
+    deps: [down]
     cmds:
       - rm -rf .cache
       - rm -rf data/neo4j/*
