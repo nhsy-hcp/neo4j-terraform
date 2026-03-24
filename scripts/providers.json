@@ -1,0 +1,19 @@
+{
+  "aws": null,
+  "google": null,
+  "azurerm": null,
+  "kubernetes": null,
+  "helm": null,
+  "vault": null,
+  "consul": null,
+  "http": null,
+  "archive": null,
+  "github": null,
+  "cloudinit": null,
+  "okta": null,
+  "null": null,
+  "random": null,
+  "local": null,
+  "tls": null,
+  "time": null
+}

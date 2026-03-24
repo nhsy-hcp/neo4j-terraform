@@ -7,6 +7,9 @@ import json
 @pytest.fixture
 def mock_neo4j():
     with patch("scripts.populate_graph.GraphDatabase.driver") as mock_driver:
+        mock_instance = MagicMock()
+        mock_instance.verify_connectivity = MagicMock()
+        mock_driver.return_value = mock_instance
         yield mock_driver
 
 
@@ -18,30 +21,33 @@ def test_populator_init(mock_neo4j):
     populator.driver.close.assert_called_once()
 
 
-def test_populate_process_entity(mock_neo4j):
+def test_populator_init_connection_failure(mock_neo4j):
+    """Test that connection failures are properly handled."""
+    from neo4j.exceptions import ServiceUnavailable
+
+    mock_neo4j.return_value.verify_connectivity.side_effect = ServiceUnavailable("Connection failed")
+
+    with pytest.raises(ConnectionError, match="Neo4j service unavailable"):
+        Neo4jPopulator("bolt://localhost:7687", "user", "pass", "TF_")
+
+
+def test_validate_schema_structure(mock_neo4j):
+    """Test schema validation."""
     populator = Neo4jPopulator("bolt://localhost:7687", "user", "pass", "TF_")
-    session = MagicMock()
 
-    entity_schema = {"block": {"attributes": {"name": {"type": "string", "description": "The name", "required": True}}}}
+    # Valid schema
+    valid_schema = {"provider_schemas": {"aws": {}}}
+    assert populator._validate_schema_structure(valid_schema) is True
 
-    populator._process_entity(session, "hashicorp/aws", "aws_instance", entity_schema, "Resource")
+    # Missing provider_schemas key
+    with pytest.raises(ValueError, match="missing 'provider_schemas' key"):
+        populator._validate_schema_structure({})
 
-    # Check if session.run was called for the entity and the attribute
-    assert session.run.call_count == 2
+    # Invalid type for provider_schemas
+    with pytest.raises(ValueError, match="must be a dictionary"):
+        populator._validate_schema_structure({"provider_schemas": []})
 
-    # Verify entity creation call
-    call_args_list = session.run.call_args_list
-    entity_call = call_args_list[0]
-    assert "MERGE (e:TF_Resource {full_name: $entity_name})" in entity_call[0][0]
-    assert entity_call[1]["entity_name"] == "aws_instance"
-    assert entity_call[1]["name"] == "instance"
-
-    # Verify attribute creation call
-    attr_call = call_args_list[1]
-    assert "MERGE (a:TF_Attribute {name: $attr_name, owner: $entity_name})" in attr_call[0][0]
-    assert attr_call[1]["attr_name"] == "name"
-    assert attr_call[1]["attr_type"] == "string"
-    assert attr_call[1]["required"] is True
+    populator.close()
 
 
 def test_populate_full_flow(mock_neo4j, tmp_path):
@@ -53,7 +59,13 @@ def test_populate_full_flow(mock_neo4j, tmp_path):
     schema_data = {
         "provider_schemas": {
             "hashicorp/aws": {
-                "resource_schemas": {"aws_s3_bucket": {"block": {"attributes": {}}}},
+                "resource_schemas": {
+                    "aws_s3_bucket": {
+                        "block": {
+                            "attributes": {"bucket": {"type": "string", "description": "Bucket name", "required": True}}
+                        }
+                    }
+                },
                 "data_source_schemas": {},
             }
         }
@@ -70,8 +82,79 @@ def test_populate_full_flow(mock_neo4j, tmp_path):
     populator.populate(str(schema_file), str(versions_file))
 
     # Check if constraints were created
-    assert any("CREATE CONSTRAINT" in call[0][0] for call in session.run.call_args_list)
+    assert any("CREATE CONSTRAINT" in str(call) for call in session.run.call_args_list)
     # Check if provider was merged
-    assert any("MERGE (p:TF_Provider" in call[0][0] for call in session.run.call_args_list)
-    # Check if resource was merged
-    assert any("MERGE (e:TF_Resource" in call[0][0] for call in session.run.call_args_list)
+    assert any("MERGE (p:TF_Provider" in str(call) for call in session.run.call_args_list)
+    # Check if resource was processed (using UNWIND batch operation)
+    assert any("UNWIND $entities" in str(call) for call in session.run.call_args_list)
+
+    populator.close()
+
+
+def test_clear_all_data(mock_neo4j):
+    """Test clearing all data."""
+    populator = Neo4jPopulator("bolt://localhost:7687", "user", "pass", "TF_")
+    session = MagicMock()
+    populator.driver.session.return_value.__enter__.return_value = session
+
+    populator.clear()
+
+    # Should delete all label types
+    assert session.run.call_count >= 5  # One for each label type
+    populator.close()
+
+
+def test_clear_specific_provider(mock_neo4j):
+    """Test clearing data for a specific provider."""
+    populator = Neo4jPopulator("bolt://localhost:7687", "user", "pass", "TF_")
+    session = MagicMock()
+    populator.driver.session.return_value.__enter__.return_value = session
+
+    populator.clear("hashicorp/aws")
+
+    # Should call run twice (delete children, then provider)
+    assert session.run.call_count == 2
+    populator.close()
+
+
+def test_execute_with_retry_success(mock_neo4j):
+    """Test successful query execution."""
+    populator = Neo4jPopulator("bolt://localhost:7687", "user", "pass", "TF_")
+    session = MagicMock()
+
+    populator._execute_with_retry(session, "MATCH (n) RETURN n", {})
+
+    assert session.run.call_count == 1
+    populator.close()
+
+
+def test_execute_with_retry_transient_error(mock_neo4j):
+    """Test retry logic for transient errors."""
+    from neo4j.exceptions import TransientError
+
+    populator = Neo4jPopulator("bolt://localhost:7687", "user", "pass", "TF_")
+    session = MagicMock()
+
+    # Fail twice, then succeed
+    session.run.side_effect = [TransientError("Transient error 1"), TransientError("Transient error 2"), MagicMock()]
+
+    populator._execute_with_retry(session, "MATCH (n) RETURN n", {}, max_retries=3)
+
+    assert session.run.call_count == 3
+    populator.close()
+
+
+def test_execute_with_retry_max_retries_exceeded(mock_neo4j):
+    """Test that max retries are respected."""
+    from neo4j.exceptions import TransientError
+
+    populator = Neo4jPopulator("bolt://localhost:7687", "user", "pass", "TF_")
+    session = MagicMock()
+
+    session.run.side_effect = TransientError("Persistent error")
+
+    with pytest.raises(TransientError):
+        populator._execute_with_retry(session, "MATCH (n) RETURN n", {}, max_retries=3)
+
+    assert session.run.call_count == 3
+    populator.close()
