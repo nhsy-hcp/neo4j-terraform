@@ -49,3 +49,19 @@ To manage the context window efficiently, avoid large, redundant outputs:
 
 - **Tests:** All core parsing and population logic must be tested with `pytest`. Maintain a minimum of **80% code coverage** for all scripts.
 - **Linting:** Maintain high code quality with `ruff`. Use `task lint` and `task format` before committing.
+- **Code Formatting:** The project uses `ruff` with a line length of 120 characters (configured in `.ruff.toml`). All code must be formatted with `ruff format` before committing.
+
+
+### E2E Testing
+To verify the complete fetch workflow with a real provider:
+1. Create a test config: `echo '{"random": null}' > .tmp/test_provider.json`
+2. Run fetch: `uv run python scripts/fetch_schemas.py .tmp/test_provider.json`
+3. Verify outputs exist: `.cache/schema.json` and `.cache/versions.json`
+4. Check logs for successful terraform init and schema export
+
+This validates:
+- Terraform integration works correctly
+- Provider resolution and version fetching
+- JSON schema export and validation
+- File I/O operations
+
